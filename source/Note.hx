@@ -83,6 +83,10 @@ class Note extends FlxSprite
 
 	public var hitsoundDisabled:Bool = false;
 	
+	private static var alphas:Map<String, Map<String, Map<Int, Array<Float>>>> = new Map()；
+	private static var indexes:Map<String, Map<String, Map<Int, Array<Int>>>> = new Map();
+	private static var glist:Array<FlxGraphic> = [];
+	
 	public static function refresh()
 	{
 		for (i in glist)
