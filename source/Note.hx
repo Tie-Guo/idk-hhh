@@ -30,6 +30,7 @@ class Note extends FlxSprite
 	public var hitByOpponent:Bool = false;
 	public var noteWasHit:Bool = false;
 	public var prevNote:Note;
+	public var synced:Bool = false;
 
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
@@ -81,6 +82,15 @@ class Note extends FlxSprite
 	public var distance:Float = 2000; //plan on doing scroll directions soon -bb
 
 	public var hitsoundDisabled:Bool = false;
+	
+	public static function refresh()
+	{
+		for (i in glist)
+			i.destroy();
+		alphas = new Map();
+		indexes = new Map();
+		glist = [];
+	}
 
 	private function set_texture(value:String):String {
 		if(texture != value) {
@@ -124,7 +134,7 @@ class Note extends FlxSprite
 		return value;
 	}
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inEditor:Bool = false)
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sync:Bool = false, ?sustainNote:Bool = false, ?endNote:Bool = false, ?inEditor:Bool = false)
 	{
 		super();
 
@@ -142,6 +152,8 @@ class Note extends FlxSprite
 		if(!inEditor) this.strumTime += ClientPrefs.noteOffset;
 
 		this.noteData = noteData;
+		
+		this.synced = sync;
 
 		if(noteData > -1) {
 			texture = '';
@@ -167,6 +179,21 @@ class Note extends FlxSprite
 		}
 
 		// trace(prevNote);
+		
+		if (sync)
+			{
+				switch (noteData)
+				{
+					case 2:
+						animation.play('greensync');
+					case 3:
+						animation.play('redsync');
+					case 1:
+						animation.play('bluesync');
+					case 0:
+						animation.play('purplesync');
+				}
+			}
 
 		if (isSustainNote && prevNote != null)
 		{
@@ -196,6 +223,8 @@ class Note extends FlxSprite
 
 			if (PlayState.isPixelStage)
 				offsetX += 30;
+				
+			
 
 			if (prevNote.isSustainNote)
 			{
@@ -314,6 +343,11 @@ class Note extends FlxSprite
 		animation.addByPrefix('redScroll', 'red0');
 		animation.addByPrefix('blueScroll', 'blue0');
 		animation.addByPrefix('purpleScroll', 'purple0');
+		
+		animation.addByPrefix('greensync', 'sgreen0');
+		animation.addByPrefix('redsync', 'sred0');
+		animation.addByPrefix('bluesync', 'sblue0');
+		animation.addByPrefix('purplesync', 'spurple0');
 
 		if (isSustainNote)
 		{
@@ -326,6 +360,16 @@ class Note extends FlxSprite
 			animation.addByPrefix('greenhold', 'green hold piece');
 			animation.addByPrefix('redhold', 'red hold piece');
 			animation.addByPrefix('bluehold', 'blue hold piece');
+			
+			animation.addByPrefix('purplerelease', 'purple release');
+			animation.addByPrefix('greenrelease', 'green release');
+			animation.addByPrefix('redrelease', 'red release');
+			animation.addByPrefix('bluerelease', 'blue release');
+
+			animation.addByPrefix('purplesyncrelease', 'spurple release');
+			animation.addByPrefix('greensyncrelease', 'sgreen release');
+			animation.addByPrefix('redsyncrelease', 'sred release');
+			animation.addByPrefix('bluesyncrelease', 'sblue release');
 		}
 
 		setGraphicSize(Std.int(width * 0.7));
